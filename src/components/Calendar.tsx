@@ -1,44 +1,52 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
+import moment, { Moment } from 'moment';
+import { RouteComponentProps } from 'react-router-dom';
+import MonthView from './MonthView';
+import WeekView from './WeekView';
+import useEventService from '../hooks/useEventService';
 import Controller from './Controller';
-import EventsMonthView from './MonthView';
-import EventsWeekView from './WeekView';
-import { getEvents } from '../services/request-service';
+import EventPopup from './EventPopup';
 
-export interface Event {
-  id: string;
-  title: string;
-  start: number;
-  end: number;
+interface CalendarProps {
+  mode?: 'month' | 'week';
+  year?: string;
+  month?: string;
+  date?: string;
 }
 
-const Calendar: React.FC = () => {
-  const [isTypeMonth, setIsTypeMonth] = useState<string>('month');
-  const [selectedDate, setSelectedDate] = useState<any>({
-    year: 2019,
-    month: 7,
-    date: 6,
-  });
+const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
+  const initialDate: any = {};
+  if (match.params.date) {
+    // only for initilization of dates
+    initialDate.y = Number(match.params.year);
+    initialDate.M = Number(match.params.month) - 1;
+    initialDate.d = Number(match.params.date);
+  }
 
-  const [events, setEvents] = useState<Event[]>([]);
+  const [dates, setDates] = useState<Moment>(moment(initialDate));
 
-  useMemo(async () => {
-    const events = await getEvents();
-    setEvents(events);
-  }, [])
+  const mode = match.params.mode || 'month';
+
+  const { status, events } = useEventService(dates, mode);
 
   return (
     <div>
       <Controller
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        isTypeMonth={isTypeMonth}
-        setIsTypeMonth={setIsTypeMonth}
+        mode={mode}
+        setDates={setDates}
+        dates={dates}
       />
-      {isTypeMonth === 'month' ? (
-        <EventsMonthView events={events} />
+
+      {mode === 'month' ? (
+        <MonthView dates={dates} events={events} />
       ) : (
-          <EventsWeekView events={events} />
+          <WeekView events={events} />
         )}
+
+      {status === 'loading' && <div>Loading...</div>}
+      {status === 'error' && (
+        <div>Error, the backend moved to the dark side.</div>
+      )}
     </div>
   );
 };

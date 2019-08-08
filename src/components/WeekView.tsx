@@ -1,13 +1,11 @@
 import React from 'react';
+import { Event } from '../types/Event';
 
-const WeekView: React.FC<{
-  events: {
-    id: string;
-    title: string;
-    start: number;
-    end: number;
-  }[];
-}> = () => {
+interface Props {
+  events: Event[];
+}
+
+const WeekView: React.FC<Props> = ({ events }) => {
   return <div></div>;
 };
 
