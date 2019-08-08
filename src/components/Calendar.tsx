@@ -1,16 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Controller from './Controller';
 import EventsMonthView from './MonthView';
 import EventsWeekView from './WeekView';
-import { events } from '../db';
+import { getEvents } from '../services/request-service';
+
+export interface Event {
+  id: string;
+  title: string;
+  start: number;
+  end: number;
+}
 
 const Calendar: React.FC = () => {
-  const [isTypeMonth, setIsTypeMonth] = useState('month');
-  const [selectedDate, setSelectedDate] = useState({
+  const [isTypeMonth, setIsTypeMonth] = useState<string>('month');
+  const [selectedDate, setSelectedDate] = useState<any>({
     year: 2019,
     month: 7,
     date: 6,
   });
+
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useMemo(async () => {
+    const events = await getEvents();
+    setEvents(events);
+  }, [])
 
   return (
     <div>
@@ -23,8 +37,8 @@ const Calendar: React.FC = () => {
       {isTypeMonth === 'month' ? (
         <EventsMonthView events={events} />
       ) : (
-        <EventsWeekView events={events} />
-      )}
+          <EventsWeekView events={events} />
+        )}
     </div>
   );
 };
