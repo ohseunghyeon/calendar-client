@@ -1,7 +1,10 @@
 :root {
-  --primary-bg: #3f50b5;
-  --secondary-bg: #f44336;
+  --primary-bg: #3c4043;
+  --secondary-bg: #4285f4;
+  --secondary-bg-hover: #4286f4be;
   --primary-text: white;
+  --main-text: #3c4043;
+  --border: #dadce0;
 }
 
 body {

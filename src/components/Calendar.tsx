@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import moment, { Moment } from 'moment';
 import { RouteComponentProps } from 'react-router-dom';
 import MonthView from './MonthView';
@@ -14,6 +15,14 @@ interface CalendarProps {
   date?: string;
 }
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+`;
+
 const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
   const initialDate: any = {};
   if (match.params.date) {
@@ -27,27 +36,23 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
 
   const mode = match.params.mode || 'month';
 
-  const { status, events } = useEventService(dates, mode);
+  const { events } = useEventService(dates, mode);
 
   return (
-    <div>
-      <Controller
-        mode={mode}
-        setDates={setDates}
-        dates={dates}
-      />
+    <Container>
+      <Controller mode={mode} setDates={setDates} dates={dates} />
 
       {mode === 'month' ? (
         <MonthView dates={dates} events={events} />
       ) : (
-          <WeekView events={events} />
-        )}
+        <WeekView events={events} />
+      )}
 
-      {status === 'loading' && <div>Loading...</div>}
+      {/* {status === 'loading' && <div>Loading...</div>}
       {status === 'error' && (
         <div>Error, the backend moved to the dark side.</div>
-      )}
-    </div>
+      )} */}
+    </Container>
   );
 };
 

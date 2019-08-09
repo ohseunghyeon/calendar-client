@@ -3,7 +3,7 @@ import { Event } from '../types/Event';
 import moment, { Moment } from 'moment';
 
 const useEventService = (dates: Moment, mode: 'month' | 'week') => {
-  const [status, setStatus] = useState<string>('loading');
+  // const [status, setStatus] = useState<string>('loading');
   const [events, setEvents] = useState<Event[]>([]);
   const [readyToFetch, setReadyToFetch] = useState(true);
 
@@ -30,8 +30,9 @@ const useEventService = (dates: Moment, mode: 'month' | 'week') => {
       fetch(
         `${process.env.REACT_APP_SERVER_URL}/events?start=${start}&end=${end}`
       )
-        .then(response => response.json()).then(body => {
-          setStatus('loaded');
+        .then(response => response.json())
+        .then(body => {
+          // setStatus('loaded');
           setReadyToFetch(false);
           if (body.error) {
             errorHandler(body.error);
@@ -45,7 +46,7 @@ const useEventService = (dates: Moment, mode: 'month' | 'week') => {
 
   return {
     events,
-    status,
+    // status,
     setReadyToFetch,
   };
 };
