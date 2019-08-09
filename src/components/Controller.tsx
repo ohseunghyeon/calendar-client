@@ -82,7 +82,7 @@ const Controller: React.FC<RouteComponentProps & ControllerProps> = ({
     setDates(newDate);
     history.push(
       `/calendar/${mode}/${newDate.year()}/${newDate.month() +
-        1}/${newDate.date()}`
+      1}/${newDate.date()}`
     );
   };
 
@@ -92,14 +92,16 @@ const Controller: React.FC<RouteComponentProps & ControllerProps> = ({
         <ArrowWrapper>
           <ArrowBackIos
             data-testid="left-arrow"
+            style={{ cursor: 'pointer' }}
             onClick={handleArrowClick('subtract')}
           />
           <ArrowForwardIos
             data-testid="right-arrow"
+            style={{ cursor: 'pointer' }}
             onClick={handleArrowClick('add')}
           />
         </ArrowWrapper>
-        <span>{makeTitle(mode, dates)}</span>
+        <Title>{makeTitle(mode, dates)}</Title>
       </TitleWrapper>
 
       <div>

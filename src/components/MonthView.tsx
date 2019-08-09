@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiberManualRecord } from '@material-ui/icons'
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
 import transformEventForCalendar from '../util/transformEventForCalendar';
@@ -34,7 +35,7 @@ export const makeDates = (dates: Moment, eventsObj: any) => {
   const weeks: {
     dateTitle: string; // 몇 월 몇 일인지
     isThisMonth: boolean; // 이 날이 보고 있는 달인지 지난 달 말인지 다음 달 초인지
-    events: Event[]; // 이 날의 이벤트들
+    events: []; // 이 날의 이벤트들
   }[][] = [];
 
   const heights: number[] = [];
@@ -71,7 +72,7 @@ export const makeDates = (dates: Moment, eventsObj: any) => {
     }
 
     // 해당 날짜 이벤트 찾아오기
-    const events = eventsObj[m] && eventsObj[m][d] || [];
+    const events = (eventsObj[m] && eventsObj[m][d]) || [];
 
     // 일 오브젝트 생성
     const date = {
@@ -96,8 +97,9 @@ export const makeDates = (dates: Moment, eventsObj: any) => {
   return { weeks, heights };
 };
 
+const days = ['일', '월', '화', '수', '목', '금', '토'];
+
 const MonthView: React.FC<Props> = ({ dates, events }) => {
-  const days = ['일', '월', '화', '수', '목', '금', '토'];
 
   // events 들을 object에 날짜로 구분해서 넣자. 그리고 이게 첫인지 중간인지 끝인지 확인하는 플래그도.
   const eventsObj = transformEventForCalendar(events);
@@ -118,8 +120,8 @@ const MonthView: React.FC<Props> = ({ dates, events }) => {
           <Weeks>
 
             <OneWeek>
-              {week.map(date => (
-                <DateTitleWrapper>
+              {week.map((date, index) => (
+                <DateTitleWrapper key={index}>
                   <DateTitle>
                     <DateTitleText
                       className={date.isThisMonth ? 'this-month' : ''}>
@@ -137,7 +139,7 @@ const MonthView: React.FC<Props> = ({ dates, events }) => {
                     {date.events.map((e: any, index) => (
                       <OneEventWrapper style={{ top: `${index}em` }}>
                         <OneEvent>
-                          {e.timeString} {e.title}
+                          <FiberManualRecord fontSize="small" color="secondary" />{e.startTimeString} {e.title}
                         </OneEvent>
                       </OneEventWrapper>
                     ))}

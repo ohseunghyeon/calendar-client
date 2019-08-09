@@ -4,7 +4,6 @@ import {
   Route,
   Redirect,
   Switch,
-  RouteComponentProps,
 } from 'react-router-dom';
 import Calendar from './components/Calendar';
 

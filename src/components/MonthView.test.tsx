@@ -43,17 +43,17 @@ describe('MonthView', () => {
   //   );
   // });
 
-  describe('function makeDates', () => {
-    it('should return an array which has proper dates number by provided moment object', () => {
-      const m = moment([2019, 8, 15]);
-      const weeks = makeDates(m);
-      expect(weeks[0][0].dateTitle).toBe('9월 1일');
-      expect(weeks[4][6].dateTitle).toBe('5');
+  // describe('function makeDates', () => {
+  //   it('should return an array which has proper dates number by provided moment object', () => {
+  //     const m = moment([2019, 8, 15]);
+  //     const weeks = makeDates(m);
+  //     expect(weeks[0][0].dateTitle).toBe('9월 1일');
+  //     expect(weeks[4][6].dateTitle).toBe('5');
 
-      const m2 = moment([2019, 7, 15]);
-      const weeks2 = makeDates(m2);
-      expect(weeks2[0][0].dateTitle).toBe('28');
-      expect(weeks2[4][6].dateTitle).toBe('31');
-    });
-  });
+  //     const m2 = moment([2019, 7, 15]);
+  //     const weeks2 = makeDates(m2);
+  //     expect(weeks2[0][0].dateTitle).toBe('28');
+  //     expect(weeks2[4][6].dateTitle).toBe('31');
+  //   });
+  // });
 });

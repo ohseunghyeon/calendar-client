@@ -45,13 +45,10 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
       {mode === 'month' ? (
         <MonthView dates={dates} events={events} />
       ) : (
-        <WeekView events={events} />
-      )}
+          <WeekView dates={dates} events={events} />
+        )}
 
-      {/* {status === 'loading' && <div>Loading...</div>}
-      {status === 'error' && (
-        <div>Error, the backend moved to the dark side.</div>
-      )} */}
+      <EventPopup />
     </Container>
   );
 };
