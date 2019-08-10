@@ -1,64 +1,35 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { ArrowBackIos, ArrowForwardIos } from '@material-ui/icons';
 import { Moment } from 'moment';
 import { History } from 'history';
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import moment from 'moment';
-import styled from 'styled-components';
+import {
+  Container,
+  TitleWrapper,
+  ArrowWrapper,
+  Title,
+  MonthWeekButton,
+} from './Controller.styled';
 
 interface ControllerProps {
   mode: 'month' | 'week';
-  dates: Moment;
-  setDates: Function;
+  date: Moment;
+  setDate: Dispatch<SetStateAction<Moment>>;
   history: History;
 }
 
-const Container = styled.div`
-  display: flex;
-  height: 50px;
-  justify-content: space-around;
-  align-items: center;
-  border-bottom: var(--border) 1px solid;
-`;
-
-const TitleWrapper = styled.div`
-  display: flex;
-  min-width: 200px;
-`;
-
-const Title = styled.div`
-  color: var(--main-text);
-`;
-
-const ArrowWrapper = styled.div`
-  margin-right: 20px;
-`;
-
-const MonthWeekButton = styled(Link)`
-  color: var(--main-text);
-  border: #000 1px solid;
-  text-decoration: none;
-  padding: 5px;
-  &:first-child {
-    border-right: none;
-  }
-  &.selected {
-    background-color: var(--primary-bg);
-    color: var(--primary-text);
-  }
-`;
-
-export const makeTitle = (mode: 'month' | 'week', dates: Moment) => {
-  let title = `${dates.year()}년 ${dates.month() + 1}월`;
+export const makeTitle = (mode: 'month' | 'week', date: Moment) => {
+  let title = `${date.year()}년 ${date.month() + 1}월`;
   if (mode === 'week') {
-    const startMonth = moment(dates)
+    const startMonth = moment(date)
       .startOf('week')
       .month();
-    const endMonth = moment(dates)
+    const endMonth = moment(date)
       .endOf('week')
       .month();
     if (startMonth !== endMonth) {
-      title = `${dates.year()}년 ${startMonth + 1}월 - ${endMonth + 1}월`;
+      title = `${date.year()}년 ${startMonth + 1}월 - ${endMonth + 1}월`;
     }
   }
   return title;
@@ -66,12 +37,12 @@ export const makeTitle = (mode: 'month' | 'week', dates: Moment) => {
 
 const Controller: React.FC<RouteComponentProps & ControllerProps> = ({
   mode,
-  dates,
-  setDates,
+  date,
+  setDate,
   history,
 }) => {
   const handleArrowClick = (arrow: 'add' | 'subtract') => () => {
-    const newDate = moment(dates);
+    const newDate = moment(date);
     // month 또는 week에 1을 더하거나 빼기
     newDate[arrow](1, mode === 'month' ? 'M' : 'w');
 
@@ -79,10 +50,10 @@ const Controller: React.FC<RouteComponentProps & ControllerProps> = ({
     if (mode === 'month') {
       newDate.startOf('month');
     }
-    setDates(newDate);
+    setDate(newDate);
     history.push(
       `/calendar/${mode}/${newDate.year()}/${newDate.month() +
-      1}/${newDate.date()}`
+        1}/${newDate.date()}`
     );
   };
 
@@ -101,22 +72,22 @@ const Controller: React.FC<RouteComponentProps & ControllerProps> = ({
             onClick={handleArrowClick('add')}
           />
         </ArrowWrapper>
-        <Title>{makeTitle(mode, dates)}</Title>
+        <Title>{makeTitle(mode, date)}</Title>
       </TitleWrapper>
 
       <div>
         <MonthWeekButton
           className={mode === 'month' ? 'selected' : ''}
           data-testid="month-view"
-          to={`/calendar/month/${dates.year()}/${dates.month() +
-            1}/${dates.date()}`}>
+          to={`/calendar/month/${date.year()}/${date.month() +
+            1}/${date.date()}`}>
           Month
         </MonthWeekButton>
         <MonthWeekButton
           className={mode === 'week' ? 'selected' : ''}
           data-testid="week-view"
-          to={`/calendar/week/${dates.year()}/${dates.month() +
-            1}/${dates.date()}`}>
+          to={`/calendar/week/${date.year()}/${date.month() +
+            1}/${date.date()}`}>
           Week
         </MonthWeekButton>
       </div>

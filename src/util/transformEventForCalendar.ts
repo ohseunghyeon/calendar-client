@@ -22,16 +22,21 @@ const transformEventForCalendar = (events: Event[]) => {
       }
       eventsObj[month][date].push(eventWithMoreInfo);
 
-
-      eventWithMoreInfo.startTimeString = start.format('HH시 mm분');
-      eventWithMoreInfo.endTimeString = end.format('HH시 mm분');
+      eventWithMoreInfo.startTimeString = start.format('a hh시');
+      eventWithMoreInfo.endTimeString = end.format('a hh시');
+      // eventWithMoreInfo.startTimeString = start.format('a hh시 mm분');
+      // eventWithMoreInfo.endTimeString = end.format('a hh시 mm분');
 
       // for week view
       // top, height, left, width, z-index, background-color, border-color;
-      eventWithMoreInfo.top = (start.hour() + (start.minute() / 60)) * 48;
+      eventWithMoreInfo.top = (start.hour() + start.minute() / 60) * 48;
       // TODO: height는 브라우저 바닥을 못 뚫게...
-      eventWithMoreInfo.height = ((end.hour() + (end.minute() / 60))
-        - (start.hour() + (start.minute() / 60))) * 48 - 4;
+      eventWithMoreInfo.height =
+        (end.hour() +
+          end.minute() / 60 -
+          (start.hour() + start.minute() / 60)) *
+          48 -
+        4;
 
       if (start.date() === end.date()) {
         eventWithMoreInfo.isLast = true;

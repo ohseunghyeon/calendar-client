@@ -1,10 +1,7 @@
 import React from 'react';
-import {
-  BrowserRouter,
-  Route,
-  Redirect,
-  Switch,
-} from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import moment from 'moment';
+import 'moment/locale/ko';
 import Calendar from './components/Calendar';
 
 const App: React.FC = () => (

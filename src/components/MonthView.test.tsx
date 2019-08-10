@@ -2,7 +2,7 @@ import React from 'react';
 import { cleanup, render, waitForDomChange } from '@testing-library/react';
 import MonthView from './MonthView';
 import moment from 'moment';
-import { makeDates } from './MonthView';
+import { makeDatesForMonth } from './MonthView';
 
 describe('MonthView', () => {
   afterEach(cleanup);
