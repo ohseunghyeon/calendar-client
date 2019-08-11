@@ -308,8 +308,7 @@ export const EventButton = styled.div`
     pointer-events: none;
     opacity: 0;
     transition: opacity 100ms linear;
-    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
-      0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
   }
 
   &::after {

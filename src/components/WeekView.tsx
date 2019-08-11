@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
-import styled from 'styled-components';
 import {
   Container,
   UpperWrapper,
@@ -45,6 +44,7 @@ import {
   EventButtonContentEnd,
 } from './WeekView.styled';
 import transformEventForCalendar from '../util/transformEventForCalendar';
+import { HOUR, DAYS, TIMES } from '../constants';
 
 interface Props {
   date: Moment;
@@ -53,37 +53,6 @@ interface Props {
   openPopupForNewEvent: (unixtime: number) => void;
   setReadyToFetch: Dispatch<SetStateAction<boolean>>;
 }
-
-const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-const TIMES = [
-  '',
-  '오전 1시',
-  '오전 2시',
-  '오전 3시',
-  '오전 4시',
-  '오전 5시',
-  '오전 6시',
-  '오전 7시',
-  '오전 8시',
-  '오전 9시',
-  '오전 10시',
-  '오전 11시',
-  '오후 12시',
-  '오후 1시',
-  '오후 2시',
-  '오후 3시',
-  '오후 4시',
-  '오후 5시',
-  '오후 6시',
-  '오후 7시',
-  '오후 8시',
-  '오후 9시',
-  '오후 10시',
-  '오후 11시',
-];
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
 
 export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
   // 일자 구하기
@@ -118,13 +87,7 @@ export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
 
 let timeout: number | undefined;
 
-const WeekView: React.FC<Props> = ({
-  date,
-  events,
-  handleEventClick,
-  openPopupForNewEvent,
-  setReadyToFetch,
-}) => {
+const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch }) => {
   const eventsObj = transformEventForCalendar(events);
   const week = makeDatesForWeek(date, eventsObj);
   const [isDragging, setIsDragging] = useState(false);
@@ -134,9 +97,7 @@ const WeekView: React.FC<Props> = ({
 
   const handleDateClick = (e: React.MouseEvent, unixtime: number) => {
     if (e.currentTarget === e.target) {
-      openPopupForNewEvent(
-        unixtime + HOUR * Math.floor(e.nativeEvent.offsetY / 48)
-      );
+      openPopupForNewEvent(unixtime + HOUR * Math.floor(e.nativeEvent.offsetY / 48));
     }
   };
 
@@ -228,12 +189,8 @@ const WeekView: React.FC<Props> = ({
                 <DateAndNumberRowPresentationColumn key={index}>
                   <DateAndNumberRowPresentationColumnEmpty />
                   <DateAndNumberRowPresentationColumnH2>
-                    <DateAndNumberRowPresentationColumnDay>
-                      {day}
-                    </DateAndNumberRowPresentationColumnDay>
-                    <DateAndNumberRowPresentationColumnNumber>
-                      {week[index].date}
-                    </DateAndNumberRowPresentationColumnNumber>
+                    <DateAndNumberRowPresentationColumnDay>{day}</DateAndNumberRowPresentationColumnDay>
+                    <DateAndNumberRowPresentationColumnNumber>{week[index].date}</DateAndNumberRowPresentationColumnNumber>
                   </DateAndNumberRowPresentationColumnH2>
                 </DateAndNumberRowPresentationColumn>
               ))}
@@ -269,15 +226,11 @@ const WeekView: React.FC<Props> = ({
                 <EventColumnWrapper key={dayIndex}>
                   <EventColumnBox
                     onDragOver={e => handleDragOver(e, dayIndex)}
-                    onClick={mouseEvent =>
-                      handleDateClick(mouseEvent, date.unixtime)
-                    }
+                    onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}
                   />
                   <EventColumnPresentation
                     onDragOver={e => handleDragOver(e, dayIndex)}
-                    onClick={mouseEvent =>
-                      handleDateClick(mouseEvent, date.unixtime)
-                    }>
+                    onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}>
                     {date.events.map(event => (
                       <EventButton
                         onDragStart={e => handleDragStart(e, event)}
@@ -291,12 +244,8 @@ const WeekView: React.FC<Props> = ({
                         onClick={() => handleEventClick(event)}>
                         <EventButtonContent>
                           <EventButtonContentTitle>
-                            <EventButtonContentTitleText>
-                              {event.title}
-                            </EventButtonContentTitleText>
-                            <EventButtonContentTime>
-                              {`${event.startTimeString}~${event.endTimeString}`}
-                            </EventButtonContentTime>
+                            <EventButtonContentTitleText>{event.title}</EventButtonContentTitleText>
+                            <EventButtonContentTime>{`${event.startTimeString}~${event.endTimeString}`}</EventButtonContentTime>
                             <EventButtonContentEnd />
                           </EventButtonContentTitle>
                         </EventButtonContent>
@@ -312,12 +261,8 @@ const WeekView: React.FC<Props> = ({
                         }}>
                         <EventButtonContent>
                           <EventButtonContentTitle>
-                            <EventButtonContentTitleText>
-                              {dragging.title}
-                            </EventButtonContentTitleText>
-                            <EventButtonContentTime>
-                              {`${dragging.startTimeString}~${dragging.endTimeString}`}
-                            </EventButtonContentTime>
+                            <EventButtonContentTitleText>{dragging.title}</EventButtonContentTitleText>
+                            <EventButtonContentTime>{`${dragging.startTimeString}~${dragging.endTimeString}`}</EventButtonContentTime>
                             <EventButtonContentEnd />
                           </EventButtonContentTitle>
                         </EventButtonContent>

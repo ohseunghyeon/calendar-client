@@ -1,6 +1,8 @@
 import moment from 'moment';
 import { Event } from '../types/Event';
 
+const PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW = 48;
+
 const transformEventForCalendar = (events: Event[]) => {
   const eventsObj: any = {};
   events
@@ -24,23 +26,12 @@ const transformEventForCalendar = (events: Event[]) => {
 
       eventWithMoreInfo.startTimeString = start.format('a hh시');
       eventWithMoreInfo.endTimeString = end.format('a hh시');
-      // eventWithMoreInfo.startTimeString = start.format('a hh시 mm분');
-      // eventWithMoreInfo.endTimeString = end.format('a hh시 mm분');
 
       // for week view
-      // top, height, left, width, z-index, background-color, border-color;
-      eventWithMoreInfo.top = (start.hour() + start.minute() / 60) * 48;
-      // TODO: height는 브라우저 바닥을 못 뚫게...
+      eventWithMoreInfo.top = (start.hour() + start.minute() / 60) * PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW;
       eventWithMoreInfo.height =
-        (end.hour() +
-          end.minute() / 60 -
-          (start.hour() + start.minute() / 60)) *
-          48 -
-        4;
-
-      if (start.date() === end.date()) {
-        eventWithMoreInfo.isLast = true;
-      }
+        (end.hour() + end.minute() / 60 - (start.hour() + start.minute() / 60)) * PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW - 4;
+      // this number 4 makes an event's bottom to have a little buffer space
 
       start.add(1, 'day');
     });

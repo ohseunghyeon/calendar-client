@@ -8,9 +8,10 @@ import WeekView from './WeekView';
 import useEventService from '../hooks/useEventService';
 import Controller from './Controller';
 import EventPopup from './EventPopup';
+import Portal from '../util/Portal';
 
 interface CalendarProps {
-  mode?: 'month' | 'week';
+  viewType: 'month' | 'week';
   year?: string;
   month?: string;
   date?: string;
@@ -25,8 +26,7 @@ const Container = styled.div`
 `;
 
 const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
-  // month || week
-  const mode = match.params.mode || 'month';
+  const viewType = match.params.viewType || 'month';
 
   // dates which user is looking
   const initialDate: any = {};
@@ -40,11 +40,11 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
   const [date, setDate] = useState<Moment>(moment(initialDate));
 
   // events
-  const { events, setReadyToFetch } = useEventService(date, mode);
+  const { events, setReadyToFetch } = useEventService(date, viewType);
 
   // popups
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [popupType, setPopupType] = useState(''); // new-month, new-week, update
+  const [popupMode, setPopupMode] = useState<'new' | 'update'>('new');
   const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event>();
   const closePopup = useCallback(() => {
@@ -54,21 +54,21 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
 
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
-    setPopupType('update');
+    setPopupMode('update');
     setIsPopupOpen(true);
   };
 
   const openPopupForNewEvent = (unixtime: number) => {
     setSelectedTime(new Date(unixtime));
-    setPopupType('new');
+    setPopupMode('new');
     setIsPopupOpen(true);
   };
 
   return (
     <Container>
-      <Controller mode={mode} setDate={setDate} date={date} />
+      <Controller viewType={viewType} setDate={setDate} date={date} />
 
-      {mode === 'month' ? (
+      {viewType === 'month' ? (
         <MonthView
           date={date}
           events={events}
@@ -87,14 +87,16 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
       )}
 
       {isPopupOpen && (
-        <EventPopup
-          mode={mode}
-          selectedEvent={selectedEvent}
-          type={popupType}
-          closePopup={closePopup}
-          setReadyToFetch={setReadyToFetch}
-          selectedTime={selectedTime}
-        />
+        <Portal>
+          <EventPopup
+            viewType={viewType}
+            selectedEvent={selectedEvent}
+            popupMode={popupMode}
+            closePopup={closePopup}
+            setReadyToFetch={setReadyToFetch}
+            selectedTime={selectedTime}
+          />
+        </Portal>
       )}
     </Container>
   );

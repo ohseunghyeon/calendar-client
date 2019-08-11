@@ -9,11 +9,7 @@ const App: React.FC = () => (
     <Switch>
       <Route
         exact
-        path={[
-          '/calendar',
-          '/calendar/:mode(month|week)',
-          '/calendar/:mode(month|week)/:year/:month/:date',
-        ]}
+        path={['/calendar', '/calendar/:viewType(month|week)', '/calendar/:viewType(month|week)/:year/:month/:date']}
         component={Calendar}
       />
       {/* <Route path= component={Calendar} />

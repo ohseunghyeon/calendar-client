@@ -15,11 +15,14 @@ export const TitleWrapper = styled.div`
 `;
 
 export const Title = styled.div`
+  font-size: 1.5em;
   color: var(--main-text);
 `;
 
 export const ArrowWrapper = styled.div`
   margin-right: 20px;
+  display: flex;
+  align-items: center;
 `;
 
 export const MonthWeekButton = styled(Link)`
