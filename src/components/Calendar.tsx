@@ -74,16 +74,17 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
           events={events}
           handleEventClick={handleEventClick}
           openPopupForNewEvent={openPopupForNewEvent}
+          setReadyToFetch={setReadyToFetch}
         />
       ) : (
-          <WeekView
-            date={date}
-            events={events}
-            handleEventClick={handleEventClick}
-            openPopupForNewEvent={openPopupForNewEvent}
-          />
-        )
-      }
+        <WeekView
+          date={date}
+          events={events}
+          handleEventClick={handleEventClick}
+          openPopupForNewEvent={openPopupForNewEvent}
+          setReadyToFetch={setReadyToFetch}
+        />
+      )}
 
       {isPopupOpen && (
         <EventPopup

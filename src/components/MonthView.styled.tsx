@@ -67,6 +67,9 @@ export const DateTitleWrapper = styled.div`
   &:last-child {
     border-right: none;
   }
+  &.droppable {
+    background-color: rgba(66, 134, 244, 0.5);
+  }
 `;
 
 export const DateTitle = styled.div`

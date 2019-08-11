@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { FiberManualRecord } from '@material-ui/icons';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
@@ -26,6 +26,7 @@ interface Props {
   events: Event[];
   handleEventClick: (e: Event) => void;
   openPopupForNewEvent: (unixtime: number) => void;
+  setReadyToFetch: Dispatch<SetStateAction<boolean>>;
 }
 
 // TODO: 얘 나중에 쪼개야겠다.
@@ -103,13 +104,68 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
   return { weeks, heights };
 };
 
-const days = ['일', '월', '화', '수', '목', '금', '토'];
+const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+const handleDragStart = (e: React.DragEvent, event: Event) => {
+  if (event.id !== undefined) {
+    e.dataTransfer.setData('event', JSON.stringify(event));
+  }
+};
+const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  e.currentTarget.classList.add('droppable');
+};
+
+const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+  e.preventDefault();
+  e.currentTarget.classList.remove('droppable');
+};
+const handleDrop = (
+  e: React.DragEvent,
+  unixtime: number,
+  setReadyToFetch: Dispatch<SetStateAction<boolean>>
+) => {
+  e.currentTarget.classList.remove('droppable');
+
+  const date = new Date(unixtime);
+
+  const event = JSON.parse(e.dataTransfer.getData('event'));
+  const start = new Date(event.start);
+  start.setMonth(date.getMonth());
+  start.setDate(date.getDate());
+  const end = new Date(event.end);
+  end.setMonth(date.getMonth());
+  end.setDate(date.getDate());
+
+  fetch(`${process.env.REACT_APP_SERVER_URL}/events`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: event.id,
+      title: event.title,
+      start: start.getTime(),
+      end: end.getTime(),
+    }),
+  })
+    .then(response => response.json())
+    .then(body => {
+      if (body.error) {
+        alert(body.error);
+      } else {
+        setReadyToFetch(true);
+      }
+    })
+    .catch(error => alert(error.message));
+};
 
 const MonthView: React.FC<Props> = ({
   date,
   events,
   handleEventClick,
   openPopupForNewEvent,
+  setReadyToFetch,
 }) => {
   // events 들을 object에 날짜로 구분해서 넣자. 그리고 이게 첫인지 중간인지 끝인지 확인하는 플래그도.
   const eventsObj = transformEventForCalendar(events);
@@ -129,7 +185,7 @@ const MonthView: React.FC<Props> = ({
     <Wrapper>
       <CalendarWrapper>
         <DaysRow>
-          {days.map(day => (
+          {DAYS.map(day => (
             <Day key={day}>
               <DayText>{day}</DayText>
             </Day>
@@ -140,7 +196,13 @@ const MonthView: React.FC<Props> = ({
             <OneWeek>
               {week.map((date, index) => (
                 <DateTitleWrapper
-                  onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => handleDrop(e, date.unixtime, setReadyToFetch)}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onClick={mouseEvent =>
+                    handleDateClick(mouseEvent, date.unixtime)
+                  }
                   key={index}>
                   <DateTitle>
                     <DateTitleText
@@ -156,10 +218,14 @@ const MonthView: React.FC<Props> = ({
               <EventsInnerWrapper style={{ height: `${heights[index]}em` }}>
                 {week.map((date, index) => (
                   <EventWrapper
-                    onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}
+                    onClick={mouseEvent =>
+                      handleDateClick(mouseEvent, date.unixtime)
+                    }
                     key={index}>
                     {date.events.map((event: any, index) => (
                       <OneEventWrapper
+                        onDragStart={e => handleDragStart(e, event)}
+                        draggable
                         key={event.id}
                         onClick={() => handleEventClick(event)}
                         style={{ top: `${index}em` }}>
