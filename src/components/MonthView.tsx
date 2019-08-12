@@ -54,7 +54,6 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
 
   let week = 0;
   while (firstDate.isSameOrBefore(lastDate)) {
-    const y = firstDate.year();
     const m = firstDate.month();
     const d = firstDate.date();
     let isThisMonth = false;

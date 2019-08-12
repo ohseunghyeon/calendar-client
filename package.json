@@ -26,6 +26,7 @@
     "@types/react-dom": "16.8.5",
     "@types/react-router-dom": "4.3.4",
     "@types/styled-components": "4.1.18",
+    "gh-pages": "2.1.1",
     "jest-fetch-mock": "2.1.2"
   },
   "scripts": {
@@ -33,7 +34,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "format": "prettier \"**/*.{ts,tsx,css}\" --write"
+    "format": "prettier \"**/*.{ts,tsx,css}\" --write",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,5 +52,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "https://ohseunghyeon.github.io/calendar-client/"
 }

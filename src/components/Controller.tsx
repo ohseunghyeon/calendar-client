@@ -40,7 +40,7 @@ const Controller: React.FC<RouteComponentProps & ControllerProps> = ({ viewType,
       newDate.startOf('month');
     }
     setDate(newDate);
-    history.push(`/calendar/${viewType}/${newDate.year()}/${newDate.month() + 1}/${newDate.date()}`);
+    history.push(`/${viewType}/${newDate.year()}/${newDate.month() + 1}/${newDate.date()}`);
   };
 
   return (
@@ -57,13 +57,13 @@ const Controller: React.FC<RouteComponentProps & ControllerProps> = ({ viewType,
         <MonthWeekButton
           className={viewType === 'month' ? 'selected' : ''}
           data-testid="month-view"
-          to={`/calendar/month/${date.year()}/${date.month() + 1}/${date.date()}`}>
+          to={`/month/${date.year()}/${date.month() + 1}/${date.date()}`}>
           Month
         </MonthWeekButton>
         <MonthWeekButton
           className={viewType === 'week' ? 'selected' : ''}
           data-testid="week-view"
-          to={`/calendar/week/${date.year()}/${date.month() + 1}/${date.date()}`}>
+          to={`/week/${date.year()}/${date.month() + 1}/${date.date()}`}>
           Week
         </MonthWeekButton>
       </div>

@@ -32,7 +32,7 @@ const useEventService = (dates: Moment, mode: 'month' | 'week') => {
       });
       setReadyToFetch(false);
     }
-  }, [readyToFetch]);
+  }, [readyToFetch, start, end]);
 
   return {
     events,
