@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/calendar/static/css/main.fe130c29.chunk.css",
-    "main.js": "/calendar/static/js/main.56106290.chunk.js",
-    "main.js.map": "/calendar/static/js/main.56106290.chunk.js.map",
-    "runtime~main.js": "/calendar/static/js/runtime~main.3b46a14a.js",
-    "runtime~main.js.map": "/calendar/static/js/runtime~main.3b46a14a.js.map",
-    "static/css/2.cc034990.chunk.css": "/calendar/static/css/2.cc034990.chunk.css",
-    "static/js/2.21a521e0.chunk.js": "/calendar/static/js/2.21a521e0.chunk.js",
-    "static/js/2.21a521e0.chunk.js.map": "/calendar/static/js/2.21a521e0.chunk.js.map",
-    "index.html": "/calendar/index.html",
-    "precache-manifest.d7061fee4e4ec54d44f0d6af92cb8938.js": "/calendar/precache-manifest.d7061fee4e4ec54d44f0d6af92cb8938.js",
-    "service-worker.js": "/calendar/service-worker.js",
-    "static/css/2.cc034990.chunk.css.map": "/calendar/static/css/2.cc034990.chunk.css.map",
-    "static/css/main.fe130c29.chunk.css.map": "/calendar/static/css/main.fe130c29.chunk.css.map"
+    "main.css": "/calendar-client/static/css/main.fe130c29.chunk.css",
+    "main.js": "/calendar-client/static/js/main.135b1d8a.chunk.js",
+    "main.js.map": "/calendar-client/static/js/main.135b1d8a.chunk.js.map",
+    "runtime~main.js": "/calendar-client/static/js/runtime~main.70d7a2db.js",
+    "runtime~main.js.map": "/calendar-client/static/js/runtime~main.70d7a2db.js.map",
+    "static/css/2.cc034990.chunk.css": "/calendar-client/static/css/2.cc034990.chunk.css",
+    "static/js/2.8bbd1a31.chunk.js": "/calendar-client/static/js/2.8bbd1a31.chunk.js",
+    "static/js/2.8bbd1a31.chunk.js.map": "/calendar-client/static/js/2.8bbd1a31.chunk.js.map",
+    "index.html": "/calendar-client/index.html",
+    "precache-manifest.c43011f0416ec19418883cb8627bc715.js": "/calendar-client/precache-manifest.c43011f0416ec19418883cb8627bc715.js",
+    "service-worker.js": "/calendar-client/service-worker.js",
+    "static/css/2.cc034990.chunk.css.map": "/calendar-client/static/css/2.cc034990.chunk.css.map",
+    "static/css/main.fe130c29.chunk.css.map": "/calendar-client/static/css/main.fe130c29.chunk.css.map"
   }
 }
