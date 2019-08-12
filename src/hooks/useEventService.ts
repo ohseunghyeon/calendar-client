@@ -4,6 +4,7 @@ import { Event } from '../types/Event';
 import moment, { Moment } from 'moment';
 
 const useEventService = (dates: Moment, mode: 'month' | 'week') => {
+  const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [readyToFetch, setReadyToFetch] = useState(true);
 
@@ -22,9 +23,11 @@ const useEventService = (dates: Moment, mode: 'month' | 'week') => {
 
   useEffect(() => {
     if (readyToFetch) {
+      setIsLoading(true);
       fetchService.fetch({
         method: 'GET',
         callback: setEvents,
+        finalCb: () => setIsLoading(false),
         qs: {
           start,
           end,
@@ -35,6 +38,7 @@ const useEventService = (dates: Moment, mode: 'month' | 'week') => {
   }, [readyToFetch, start, end]);
 
   return {
+    isLoading,
     events,
     setReadyToFetch,
   };

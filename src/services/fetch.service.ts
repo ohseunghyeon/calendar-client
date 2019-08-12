@@ -4,6 +4,7 @@ interface Props {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: { id?: number; title?: string; start?: number; end?: number };
   callback?: Function;
+  finalCb?: Function;
   qs?: {
     start: number;
     end: number;
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export default {
-  fetch: ({ method, body, callback, qs }: Props) => {
+  fetch: ({ method, body, callback, finalCb, qs }: Props) => {
     const queries = qs ? `${querystring.stringify(qs)}` : '';
     fetch(`${process.env.REACT_APP_SERVER_URL}/events?${queries}`, {
       method,
@@ -25,6 +26,7 @@ export default {
         } else {
           if (callback) callback(body);
         }
+        if (finalCb) finalCb();
       })
       .catch(error => alert(error.message));
   },

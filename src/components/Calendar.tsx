@@ -9,6 +9,7 @@ import useEventService from '../hooks/useEventService';
 import Controller from './Controller';
 import EventPopup from './EventPopup';
 import Portal from '../util/Portal';
+import Loading from '../util/Loading';
 
 interface CalendarProps {
   viewType: 'month' | 'week';
@@ -41,7 +42,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
   const [date, setDate] = useState<Moment>(moment(initialDate));
 
   // events
-  const { events, setReadyToFetch } = useEventService(date, viewType);
+  const { events, setReadyToFetch, isLoading } = useEventService(date, viewType);
 
   // popups
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -78,14 +79,14 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
           setReadyToFetch={setReadyToFetch}
         />
       ) : (
-        <WeekView
-          date={date}
-          events={events}
-          handleEventClick={handleEventClick}
-          openPopupForNewEvent={openPopupForNewEvent}
-          setReadyToFetch={setReadyToFetch}
-        />
-      )}
+          <WeekView
+            date={date}
+            events={events}
+            handleEventClick={handleEventClick}
+            openPopupForNewEvent={openPopupForNewEvent}
+            setReadyToFetch={setReadyToFetch}
+          />
+        )}
 
       {isPopupOpen && (
         <Portal>
@@ -99,6 +100,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
           />
         </Portal>
       )}
+      {isLoading && <Loading />}
     </Container>
   );
 };
