@@ -114,7 +114,8 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     }
   };
 
-  const handleDragStart = (event: Event) => {
+  const handleDragStart = (e: React.DragEvent, event: Event) => {
+    e.dataTransfer.setData('text', '');
     setDraggingEvent(event);
   };
 
@@ -189,7 +190,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
                     {date.events.map((event: any, index) => (
                       <OneEventWrapper
                         data-testid={`${new Date(date.unixtime).getMonth()}-${new Date(date.unixtime).getDate()}-${index}`}
-                        onDragStart={() => handleDragStart(event)}
+                        onDragStart={(e) => handleDragStart(e, event)}
                         draggable
                         key={event.id}
                         onClick={() => handleEventClick(event)}

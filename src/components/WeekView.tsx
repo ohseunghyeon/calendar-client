@@ -103,7 +103,8 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
     }
   };
 
-  const handleDragStart = (event: Event) => {
+  const handleDragStart = (e: React.DragEvent, event: Event) => {
+    e.dataTransfer.setData('text', '');
     setDraggingEvent(event);
     setIsDragging(true);
   };
@@ -219,7 +220,7 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
                     {date.events.map((event, eventIndex) => (
                       <EventButton
                         data-testid={`${date.date}-${eventIndex}`}
-                        onDragStart={() => handleDragStart(event)}
+                        onDragStart={(e) => handleDragStart(e, event)}
                         onDragEnd={handleDragEnd}
                         draggable
                         key={event.id}
