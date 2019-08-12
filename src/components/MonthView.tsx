@@ -67,6 +67,7 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
         moment(firstDate)
           .startOf('month')
           .week();
+      if (week === -48) week = 49; // 12월 마지막 주 예외처리
       isThisMonth = true;
     }
 
@@ -134,6 +135,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     const differenceStartEnd = event.end - event.start;
 
     const start = new Date(event.start);
+    start.setFullYear(date.getFullYear());
     start.setMonth(date.getMonth());
     start.setDate(date.getDate());
 

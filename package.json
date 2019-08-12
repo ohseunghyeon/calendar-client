@@ -1,6 +1,7 @@
 {
   "name": "calendar-client",
   "version": "0.1.0",
+  "license": "MIT",
   "dependencies": {
     "@material-ui/core": "4.3.1",
     "@material-ui/icons": "4.2.1",
