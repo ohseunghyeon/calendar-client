@@ -44,7 +44,8 @@ import {
   EventButtonContentEnd,
 } from './WeekView.styled';
 import transformEventForCalendar from '../util/transformEventForCalendar';
-import { HOUR, DAYS, TIMES } from '../constants';
+import { HOUR, DAYS, TIMES, ONE_HOUR_HEIGHT_PIXELS } from '../constants';
+import fetchService from '../services/fetch.service';
 
 interface Props {
   date: Moment;
@@ -91,32 +92,28 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
   const eventsObj = transformEventForCalendar(events);
   const week = makeDatesForWeek(date, eventsObj);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragging, setDragging] = useState<any>(); // event object
+  const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
   const [draggingDayIndex, setDraggingDayIndex] = useState(-1);
   const [draggingTop, setDraggingTop] = useState(0);
 
   const handleDateClick = (e: React.MouseEvent, unixtime: number) => {
     if (e.currentTarget === e.target) {
-      openPopupForNewEvent(unixtime + HOUR * Math.floor(e.nativeEvent.offsetY / 48));
+      openPopupForNewEvent(unixtime + HOUR * Math.floor(e.nativeEvent.offsetY / ONE_HOUR_HEIGHT_PIXELS));
     }
   };
 
-  const handleDragStart = (e: React.DragEvent, event: Event) => {
-    if (event.id !== undefined) {
-      setDragging(event);
-      setIsDragging(true);
-    }
+  const handleDragStart = (event: Event) => {
+    setDraggingEvent(event);
+    setIsDragging(true);
   };
 
   const handleDragOver = (e: React.DragEvent, dayIndex: number) => {
     e.preventDefault();
     if (timeout === undefined && e.target === e.currentTarget) {
       setDraggingDayIndex(dayIndex);
-      setDraggingTop(Math.floor(e.nativeEvent.offsetY / 48) * 48);
+      setDraggingTop(Math.floor(e.nativeEvent.offsetY / ONE_HOUR_HEIGHT_PIXELS) * ONE_HOUR_HEIGHT_PIXELS);
 
-      timeout = setTimeout(() => {
-        timeout = undefined;
-      }, 100);
+      timeout = setTimeout(() => (timeout = undefined), 100);
     }
   };
 
@@ -127,42 +124,27 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
       return;
     }
 
-    const event = dragging;
-    const day = draggingDayIndex;
-    const hour = draggingTop / 48;
+    const event = draggingEvent;
     const differenceStartEnd = event.end - event.start;
 
     const startDate = moment(event.start);
-    startDate.day(day);
-    startDate.hour(hour);
-    const start = startDate.unix() * 1000;
-    const end = start + differenceStartEnd;
+    startDate.day(draggingDayIndex);
+    startDate.hour(draggingTop / ONE_HOUR_HEIGHT_PIXELS);
 
     setDraggingDayIndex(-1);
-    setDragging(undefined);
+    setDraggingEvent(undefined);
     setDraggingTop(0);
 
-    fetch(`${process.env.REACT_APP_SERVER_URL}/events`, {
+    fetchService.fetch({
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         id: event.id,
         title: event.title,
-        start,
-        end,
-      }),
-    })
-      .then(response => response.json())
-      .then(body => {
-        if (body.error) {
-          alert(body.error);
-        } else {
-          setReadyToFetch(true);
-        }
-      })
-      .catch(error => alert(error.message));
+        start: startDate.unix() * 1000,
+        end: startDate.unix() * 1000 + differenceStartEnd,
+      },
+      callback: () => setReadyToFetch(true),
+    });
   };
 
   return (
@@ -225,15 +207,17 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
               {week.map((date, dayIndex) => (
                 <EventColumnWrapper key={dayIndex}>
                   <EventColumnBox
+                    data-testid={`Date-${date.date}`}
                     onDragOver={e => handleDragOver(e, dayIndex)}
                     onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}
                   />
                   <EventColumnPresentation
                     onDragOver={e => handleDragOver(e, dayIndex)}
                     onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}>
-                    {date.events.map(event => (
+                    {date.events.map((event, eventIndex) => (
                       <EventButton
-                        onDragStart={e => handleDragStart(e, event)}
+                        data-testid={`${date.date}-${eventIndex}`}
+                        onDragStart={() => handleDragStart(event)}
                         onDragEnd={handleDragEnd}
                         draggable
                         key={event.id}
@@ -244,8 +228,10 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
                         onClick={() => handleEventClick(event)}>
                         <EventButtonContent>
                           <EventButtonContentTitle>
-                            <EventButtonContentTitleText>{event.title}</EventButtonContentTitleText>
-                            <EventButtonContentTime>{`${event.startTimeString}~${event.endTimeString}`}</EventButtonContentTime>
+                            <EventButtonContentTitleText data-testid="title">{event.title}</EventButtonContentTitleText>
+                            <EventButtonContentTime data-testid="time">
+                              {`${event.startTimeString}~${event.endTimeString}`}
+                            </EventButtonContentTime>
                             <EventButtonContentEnd />
                           </EventButtonContentTitle>
                         </EventButtonContent>
@@ -256,13 +242,13 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
                       <EventButton
                         style={{
                           top: `${draggingTop}px`,
-                          height: `${dragging.height}px`,
+                          height: `${draggingEvent.height}px`,
                           opacity: 0.7,
                         }}>
                         <EventButtonContent>
                           <EventButtonContentTitle>
-                            <EventButtonContentTitleText>{dragging.title}</EventButtonContentTitleText>
-                            <EventButtonContentTime>{`${dragging.startTimeString}~${dragging.endTimeString}`}</EventButtonContentTime>
+                            <EventButtonContentTitleText>{draggingEvent.title}</EventButtonContentTitleText>
+                            <EventButtonContentTime>{`${draggingEvent.startTimeString}~${draggingEvent.endTimeString}`}</EventButtonContentTime>
                             <EventButtonContentEnd />
                           </EventButtonContentTitle>
                         </EventButtonContent>

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { FiberManualRecord } from '@material-ui/icons';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
@@ -31,7 +31,6 @@ interface Props {
   setReadyToFetch: Dispatch<SetStateAction<boolean>>;
 }
 
-// TODO: 얘 나중에 쪼개야겠다.
 /**
  * 캘린더에 쓸 Week [], dates [] 생성.
  * ex) 4주면 [['1', '2'...], [...], [..], [..]]
@@ -103,55 +102,52 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
   return { weeks, heights };
 };
 
-const handleDragStart = (e: React.DragEvent, event: Event) => {
-  if (event.id !== undefined) {
-    e.dataTransfer.setData('event', JSON.stringify(event));
-  }
-};
-const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-  e.preventDefault();
-  e.currentTarget.classList.add('droppable');
-};
-
-const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-  e.preventDefault();
-  e.currentTarget.classList.remove('droppable');
-};
-const handleDrop = (e: React.DragEvent, unixtime: number, setReadyToFetch: Dispatch<SetStateAction<boolean>>) => {
-  e.currentTarget.classList.remove('droppable');
-
-  const date = new Date(unixtime);
-  
-  const event = JSON.parse(e.dataTransfer.getData('event'));
-
-  const differenceStartEnd = event.end - event.start;
-
-  const start = new Date(event.start);
-  start.setMonth(date.getMonth());
-  start.setDate(date.getDate());
-
-  fetchService.fetch({
-    method: 'PUT',
-    body: {
-      id: event.id,
-      title: event.title,
-      start: start.getTime(),
-      end: start.getTime() + differenceStartEnd,
-    },
-    callback: () => setReadyToFetch(true)
-  });
-};
-
 const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch }) => {
-  // events 들을 object에 날짜로 구분해서 넣자. 그리고 이게 첫인지 중간인지 끝인지 확인하는 플래그도.
   const eventsObj = transformEventForCalendar(events);
-
   const { weeks, heights } = makeDatesForMonth(date, eventsObj);
+  const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
 
-  const handleDateClick = (e: React.SyntheticEvent<HTMLDivElement>, unixtime: number) => {
+  const handleDateClick = (e: React.SyntheticEvent, unixtime: number) => {
     if (e.currentTarget === e.target) {
       openPopupForNewEvent(unixtime);
     }
+  };
+
+  const handleDragStart = (event: Event) => {
+    setDraggingEvent(event);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.currentTarget.classList.add('droppable');
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove('droppable');
+  };
+
+  const handleDrop = (e: React.DragEvent, droppedDateUnixtime: number) => {
+    e.currentTarget.classList.remove('droppable');
+
+    const date = new Date(droppedDateUnixtime);
+    const event = draggingEvent;
+    const differenceStartEnd = event.end - event.start;
+
+    const start = new Date(event.start);
+    start.setMonth(date.getMonth());
+    start.setDate(date.getDate());
+
+    fetchService.fetch({
+      method: 'PUT',
+      body: {
+        id: event.id,
+        title: event.title,
+        start: start.getTime(),
+        end: start.getTime() + differenceStartEnd,
+      },
+      callback: () => setReadyToFetch(true),
+    });
   };
 
   return (
@@ -164,13 +160,14 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
             </Day>
           ))}
         </DaysRow>
-        {weeks.map((week, index) => (
-          <Weeks key={index}>
+        {weeks.map((week, weekIndex) => (
+          <Weeks key={weekIndex}>
             <OneWeek>
               {week.map((date, index) => (
                 <DateTitleWrapper
+                  data-testid={`TW-${new Date(date.unixtime).getMonth()}-${new Date(date.unixtime).getDate()}`}
                   onDragOver={e => e.preventDefault()}
-                  onDrop={e => handleDrop(e, date.unixtime, setReadyToFetch)}
+                  onDrop={e => handleDrop(e, date.unixtime)}
                   onDragEnter={handleDragEnter}
                   onDragLeave={handleDragLeave}
                   onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)}
@@ -183,17 +180,18 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
             </OneWeek>
 
             <EventsWrapper>
-              <EventsInnerWrapper style={{ height: `${heights[index]}em` }}>
+              <EventsInnerWrapper style={{ height: `${heights[weekIndex]}em` }}>
                 {week.map((date, index) => (
                   <EventWrapper onClick={mouseEvent => handleDateClick(mouseEvent, date.unixtime)} key={index}>
                     {date.events.map((event: any, index) => (
                       <OneEventWrapper
-                        onDragStart={e => handleDragStart(e, event)}
+                        data-testid={`${new Date(date.unixtime).getMonth()}-${new Date(date.unixtime).getDate()}-${index}`}
+                        onDragStart={() => handleDragStart(event)}
                         draggable
                         key={event.id}
                         onClick={() => handleEventClick(event)}
                         style={{ top: `${index}em` }}>
-                        <OneEvent>
+                        <OneEvent data-testid="title">
                           <FiberManualRecord fontSize="small" color="secondary" />
                           {event.startTimeString} {event.title}
                         </OneEvent>

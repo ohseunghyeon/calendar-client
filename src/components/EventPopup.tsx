@@ -13,7 +13,7 @@ interface EventPopupProps {
 }
 
 const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEvent, closePopup, setReadyToFetch, selectedTime }) => {
-  const handleDimClick = useCallback((e: React.SyntheticEvent) => e.currentTarget === e.target && closePopup(), []);
+  const handleDimClick = useCallback((e: React.SyntheticEvent) => e.currentTarget === e.target && closePopup(), [closePopup]);
 
   const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : '');
   const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value), [setTitle]);
@@ -40,7 +40,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEv
   const callback = useCallback(() => {
     setReadyToFetch(true);
     closePopup();
-  }, []);
+  }, [closePopup, setReadyToFetch]);
 
   const handleRemove = () => {
     if (selectedEvent) {

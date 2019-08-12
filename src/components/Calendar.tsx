@@ -28,7 +28,7 @@ const Container = styled.div`
 const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
   const viewType = match.params.viewType || 'month';
 
-  // dates which user is looking
+  // a date which user is looking
   const initialDate: any = {};
   if (match.params.date) {
     // only for initilization of dates when it's the first open of this app

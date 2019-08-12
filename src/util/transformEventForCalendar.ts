@@ -2,7 +2,16 @@ import moment from 'moment';
 import { Event } from '../types/Event';
 
 const PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW = 48;
+const PIXELS_BOTTOM_PADDING = 4;
 
+/**
+ * Transform Events array to Events Object like
+ * {
+ *    month: {
+ *        date: []
+ *    }
+ * }
+ */
 const transformEventForCalendar = (events: Event[]) => {
   const eventsObj: any = {};
   events
@@ -30,8 +39,7 @@ const transformEventForCalendar = (events: Event[]) => {
       // for week view
       eventWithMoreInfo.top = (start.hour() + start.minute() / 60) * PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW;
       eventWithMoreInfo.height =
-        (end.hour() + end.minute() / 60 - (start.hour() + start.minute() / 60)) * PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW - 4;
-      // this number 4 makes an event's bottom to have a little buffer space
+        (end.hour() + end.minute() / 60 - (start.hour() + start.minute() / 60)) * PIXELS_OF_ONE_EVENT_IN_WEEK_VIEW - PIXELS_BOTTOM_PADDING;
 
       start.add(1, 'day');
     });
