@@ -53,6 +53,7 @@ interface Props {
   handleEventClick: (e: Event) => void;
   openPopupForNewEvent: (unixtime: number) => void;
   setReadyToFetch: Dispatch<SetStateAction<boolean>>;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
@@ -88,7 +89,7 @@ export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
 
 let timeout: number | undefined;
 
-const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch }) => {
+const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch, setIsLoading }) => {
   const eventsObj = transformEventForCalendar(events);
   const week = makeDatesForWeek(date, eventsObj);
   const [isDragging, setIsDragging] = useState(false);
@@ -135,6 +136,7 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
     setDraggingEvent(undefined);
     setDraggingTop(0);
 
+    setIsLoading(true);
     fetchService.fetch({
       method: 'PUT',
       body: {

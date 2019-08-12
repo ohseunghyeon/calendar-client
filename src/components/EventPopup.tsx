@@ -10,9 +10,10 @@ interface EventPopupProps {
   closePopup: () => void;
   setReadyToFetch: Dispatch<SetStateAction<boolean>>;
   selectedTime: Date;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEvent, closePopup, setReadyToFetch, selectedTime }) => {
+const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEvent, closePopup, setReadyToFetch, selectedTime, setIsLoading }) => {
   const handleDimClick = useCallback((e: React.SyntheticEvent) => e.currentTarget === e.target && closePopup(), [closePopup]);
 
   const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : '');
@@ -44,6 +45,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEv
 
   const handleRemove = () => {
     if (selectedEvent) {
+      setIsLoading(true);
       fetchService.fetch({
         method: 'DELETE',
         body: { id: selectedEvent.id },
@@ -53,6 +55,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEv
   };
 
   const handleSave = () => {
+    setIsLoading(true);
     fetchService.fetch({
       method: popupMode === 'update' ? 'PUT' : 'POST',
       body: {

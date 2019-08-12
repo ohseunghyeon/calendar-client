@@ -39,6 +39,7 @@ const useEventService = (dates: Moment, mode: 'month' | 'week') => {
 
   return {
     isLoading,
+    setIsLoading,
     events,
     setReadyToFetch,
   };

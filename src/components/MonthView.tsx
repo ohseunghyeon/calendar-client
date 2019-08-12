@@ -29,6 +29,7 @@ interface Props {
   handleEventClick: (e: Event) => void;
   openPopupForNewEvent: (unixtime: number) => void;
   setReadyToFetch: Dispatch<SetStateAction<boolean>>;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -102,7 +103,7 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
   return { weeks, heights };
 };
 
-const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch }) => {
+const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch , setIsLoading}) => {
   const eventsObj = transformEventForCalendar(events);
   const { weeks, heights } = makeDatesForMonth(date, eventsObj);
   const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
@@ -139,6 +140,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     start.setMonth(date.getMonth());
     start.setDate(date.getDate());
 
+    setIsLoading(true);
     fetchService.fetch({
       method: 'PUT',
       body: {

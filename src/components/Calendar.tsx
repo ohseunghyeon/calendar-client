@@ -42,7 +42,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
   const [date, setDate] = useState<Moment>(moment(initialDate));
 
   // events
-  const { events, setReadyToFetch, isLoading } = useEventService(date, viewType);
+  const { events, setReadyToFetch, isLoading, setIsLoading } = useEventService(date, viewType);
 
   // popups
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -76,6 +76,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
           events={events}
           handleEventClick={handleEventClick}
           openPopupForNewEvent={openPopupForNewEvent}
+          setIsLoading={setIsLoading}
           setReadyToFetch={setReadyToFetch}
         />
       ) : (
@@ -84,6 +85,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
             events={events}
             handleEventClick={handleEventClick}
             openPopupForNewEvent={openPopupForNewEvent}
+            setIsLoading={setIsLoading}
             setReadyToFetch={setReadyToFetch}
           />
         )}
@@ -95,6 +97,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
             selectedEvent={selectedEvent}
             popupMode={popupMode}
             closePopup={closePopup}
+            setIsLoading={setIsLoading}
             setReadyToFetch={setReadyToFetch}
             selectedTime={selectedTime}
           />
