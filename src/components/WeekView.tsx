@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState, useCallback } from 'react';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
 import {
@@ -97,19 +97,19 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
   const [draggingDayIndex, setDraggingDayIndex] = useState(-1);
   const [draggingTop, setDraggingTop] = useState(0);
 
-  const handleDateClick = (e: React.MouseEvent, unixtime: number) => {
+  const handleDateClick = useCallback((e: React.MouseEvent, unixtime: number) => {
     if (e.currentTarget === e.target) {
       openPopupForNewEvent(unixtime + HOUR * Math.floor(e.nativeEvent.offsetY / ONE_HOUR_HEIGHT_PIXELS));
     }
-  };
+  }, []);
 
-  const handleDragStart = (e: React.DragEvent, event: Event) => {
-    e.dataTransfer.setData('text', '');
+  const handleDragStart = useCallback((e: React.DragEvent, event: Event) => {
+    // e.dataTransfer.setData('text', '');
     setDraggingEvent(event);
     setIsDragging(true);
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent, dayIndex: number) => {
+  const handleDragOver = useCallback((e: React.DragEvent, dayIndex: number) => {
     e.preventDefault();
     if (timeout === undefined && e.target === e.currentTarget) {
       setDraggingDayIndex(dayIndex);
@@ -117,9 +117,9 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
 
       timeout = setTimeout(() => (timeout = undefined), 100);
     }
-  };
+  }, []);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     setIsDragging(false);
 
     if (draggingDayIndex === -1) {
@@ -148,7 +148,7 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
       },
       callback: () => setReadyToFetch(true),
     });
-  };
+  }, [draggingDayIndex]);
 
   return (
     <Container>

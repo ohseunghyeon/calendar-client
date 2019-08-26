@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState, useCallback } from 'react';
 import { FiberManualRecord } from '@material-ui/icons';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
@@ -108,28 +108,28 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
   const { weeks, heights } = makeDatesForMonth(date, eventsObj);
   const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
 
-  const handleDateClick = (e: React.SyntheticEvent, unixtime: number) => {
+  const handleDateClick = useCallback((e: React.SyntheticEvent, unixtime: number) => {
     if (e.currentTarget === e.target) {
       openPopupForNewEvent(unixtime);
     }
-  };
+  }, []);
 
-  const handleDragStart = (e: React.DragEvent, event: Event) => {
-    e.dataTransfer.setData('text', '');
+  const handleDragStart = useCallback((e: React.DragEvent, event: Event) => {
+    // e.dataTransfer.setData('text', '');
     setDraggingEvent(event);
-  };
+  }, []);
 
-  const handleDragEnter = (e: React.DragEvent) => {
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.currentTarget.classList.add('droppable');
-  };
+  }, []);
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.currentTarget.classList.remove('droppable');
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent, droppedDateUnixtime: number) => {
+  const handleDrop = useCallback((e: React.DragEvent, droppedDateUnixtime: number) => {
     e.currentTarget.classList.remove('droppable');
 
     const date = new Date(droppedDateUnixtime);
@@ -140,7 +140,6 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     start.setFullYear(date.getFullYear());
     start.setMonth(date.getMonth());
     start.setDate(date.getDate());
-
     setIsLoading(true);
     fetchService.fetch({
       method: 'PUT',
@@ -152,7 +151,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
       },
       callback: () => setReadyToFetch(true),
     });
-  };
+  }, [draggingEvent]);
 
   return (
     <Wrapper>
