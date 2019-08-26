@@ -27,7 +27,7 @@ describe('Controller', () => {
       newDate.add(1, 'month').startOf('month');
 
       expect(setDate).toBeCalledWith(newDate);
-      expect(history.location.pathname).toBe('/calendar/month/2019/9/1');
+      expect(history.location.pathname).toBe('/month/2019/9/1');
     });
 
     it('should subtract 1 month from dates on left arrow click with month view', () => {
@@ -41,7 +41,7 @@ describe('Controller', () => {
       newDate.subtract(1, 'month').startOf('month');
 
       expect(setDate).toBeCalledWith(newDate);
-      expect(history.location.pathname).toBe('/calendar/month/2019/7/1');
+      expect(history.location.pathname).toBe('/month/2019/7/1');
     });
 
     it('should add 1 week from dates on right arrow click with week view', () => {
@@ -55,7 +55,7 @@ describe('Controller', () => {
       newDate.add(1, 'week');
 
       expect(setDate).toBeCalledWith(newDate);
-      expect(history.location.pathname).toBe('/calendar/week/2019/8/15');
+      expect(history.location.pathname).toBe('/week/2019/8/15');
     });
 
     it('should subtrack 1 week from dates on left arrow click with week view', () => {
@@ -69,7 +69,7 @@ describe('Controller', () => {
       newDate.subtract(1, 'week');
 
       expect(setDate).toBeCalledWith(newDate);
-      expect(history.location.pathname).toBe('/calendar/week/2019/8/1');
+      expect(history.location.pathname).toBe('/week/2019/8/1');
     });
   });
 
@@ -95,15 +95,15 @@ describe('Controller', () => {
     it('should change month to week and week to month with proper url', async () => {
       const date = moment([2019, 7, 8]);
       const { getByTestId, history } = renderWithRouter(<Controller setDate={() => {}} date={date} viewType="month" />, {
-        route: '/calendar/week',
+        route: '/week',
       });
 
-      expect(history.location.pathname).toBe('/calendar/week');
+      expect(history.location.pathname).toBe('/week');
 
       fireEvent.click(getByTestId('week-view'));
-      expect(history.location.pathname).toBe('/calendar/week/2019/8/8');
+      expect(history.location.pathname).toBe('/week/2019/8/8');
       fireEvent.click(getByTestId('month-view'));
-      expect(history.location.pathname).toBe('/calendar/month/2019/8/8');
+      expect(history.location.pathname).toBe('/month/2019/8/8');
     });
   });
 });

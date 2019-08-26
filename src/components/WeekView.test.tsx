@@ -14,13 +14,16 @@ describe('WeekView', () => {
   let handleEventClick: jest.Mock;
   let openPopupForNewEvent: jest.Mock;
   let setReadyToFetch: jest.Mock;
+  let setIsLoading: jest.Mock;
   let events: Event[];
   let date: Moment;
 
   beforeEach(() => {
+    fetchService.fetch = jest.fn();
     handleEventClick = jest.fn();
     openPopupForNewEvent = jest.fn();
     setReadyToFetch = jest.fn();
+    setIsLoading = jest.fn();
     events = [
       {
         id: 1,
@@ -39,6 +42,7 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
@@ -54,6 +58,7 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
@@ -72,6 +77,7 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
@@ -93,7 +99,6 @@ describe('WeekView', () => {
   });
 
   it('should drag and drop event to other date and invoke update request', () => {
-    fetchService.fetch = jest.fn();
 
     // it has start, end which is 1 date tile added
     const changedEvent = {
@@ -109,11 +114,16 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
 
-    fireEvent.dragStart(getByTestId('6-0'));
+    fireEvent.dragStart(getByTestId('6-0'), {
+      dataTransfer: {
+        a: 1
+      }
+    });
 
     const RANDOM_OFFSET_X = 20;
     const event = new MouseEvent('dragover', {

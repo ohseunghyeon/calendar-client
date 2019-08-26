@@ -13,6 +13,7 @@ describe('MonthView', () => {
   let handleEventClick: jest.Mock;
   let openPopupForNewEvent: jest.Mock;
   let setReadyToFetch: jest.Mock;
+  let setIsLoading: jest.Mock;
   let events: Event[];
   let date: Moment;
 
@@ -20,6 +21,7 @@ describe('MonthView', () => {
     handleEventClick = jest.fn();
     openPopupForNewEvent = jest.fn();
     setReadyToFetch = jest.fn();
+    setIsLoading = jest.fn();
     events = [
       {
         id: 1,
@@ -38,6 +40,7 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
@@ -52,6 +55,7 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
@@ -70,6 +74,7 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
@@ -98,11 +103,16 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
+        setIsLoading={setIsLoading}
         setReadyToFetch={setReadyToFetch}
       />
     );
 
-    fireEvent.dragStart(getByTestId('7-6-0'));
+    fireEvent.dragStart(getByTestId('7-6-0'), {
+      dataTransfer: {
+        a: 1
+      }
+    });
     fireEvent.drop(getByTestId('TW-7-7'));
     expect(fetchService.fetch).toBeCalledTimes(1);
     expect(fetchService.fetch).toBeCalledWith(
