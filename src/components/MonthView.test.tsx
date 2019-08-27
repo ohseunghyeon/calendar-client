@@ -110,8 +110,8 @@ describe('MonthView', () => {
 
     fireEvent.dragStart(getByTestId('7-6-0'), {
       dataTransfer: {
-        a: 1
-      }
+        a: 1,
+      },
     });
     fireEvent.drop(getByTestId('TW-7-7'));
     expect(fetchService.fetch).toBeCalledTimes(1);

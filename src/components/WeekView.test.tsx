@@ -99,7 +99,6 @@ describe('WeekView', () => {
   });
 
   it('should drag and drop event to other date and invoke update request', () => {
-
     // it has start, end which is 1 date tile added
     const changedEvent = {
       id: 1,
@@ -121,8 +120,8 @@ describe('WeekView', () => {
 
     fireEvent.dragStart(getByTestId('6-0'), {
       dataTransfer: {
-        a: 1
-      }
+        a: 1,
+      },
     });
 
     const RANDOM_OFFSET_X = 20;

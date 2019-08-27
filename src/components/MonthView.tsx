@@ -103,7 +103,7 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
   return { weeks, heights };
 };
 
-const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch , setIsLoading}) => {
+const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch, setIsLoading }) => {
   const eventsObj = transformEventForCalendar(events);
   const { weeks, heights } = makeDatesForMonth(date, eventsObj);
   const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
@@ -112,7 +112,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     if (e.currentTarget === e.target) {
       openPopupForNewEvent(unixtime);
     }
-  }, []);
+  }, [openPopupForNewEvent]);
 
   const handleDragStart = useCallback((e: React.DragEvent, event: Event) => {
     // e.dataTransfer.setData('text', '');
@@ -129,7 +129,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     e.currentTarget.classList.remove('droppable');
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent, droppedDateUnixtime: number) => {
+  const handleDrop = (e: React.DragEvent, droppedDateUnixtime: number) => {
     e.currentTarget.classList.remove('droppable');
 
     const date = new Date(droppedDateUnixtime);
@@ -151,7 +151,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
       },
       callback: () => setReadyToFetch(true),
     });
-  }, [draggingEvent]);
+  }
 
   return (
     <Wrapper>
@@ -189,7 +189,7 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
                     {date.events.map((event: any, index) => (
                       <OneEventWrapper
                         data-testid={`${new Date(date.unixtime).getMonth()}-${new Date(date.unixtime).getDate()}-${index}`}
-                        onDragStart={(e) => handleDragStart(e, event)}
+                        onDragStart={e => handleDragStart(e, event)}
                         draggable
                         key={event.id}
                         onClick={() => handleEventClick(event)}
