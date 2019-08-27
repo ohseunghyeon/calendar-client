@@ -3,35 +3,32 @@ import { cleanup, render, fireEvent } from '@testing-library/react';
 import WeekView, { makeDatesForWeek } from './WeekView';
 import moment, { Moment } from 'moment';
 import 'moment/locale/ko';
-import fetchService from '../services/fetch.service';
-import { Event } from '../types/Event';
 import { ONE_HOUR_HEIGHT_PIXELS } from '../constants';
 import transformEventForCalendar from '../util/transformEventForCalendar';
+import { Event } from '../types/Event';
 
 describe('WeekView', () => {
   afterEach(cleanup);
 
   let handleEventClick: jest.Mock;
   let openPopupForNewEvent: jest.Mock;
-  let setReadyToFetch: jest.Mock;
-  let setIsLoading: jest.Mock;
-  let events: Event[];
+  let events: any;
   let date: Moment;
+  let request: jest.Mock;
+  const originalEvents: Event[] = [
+    {
+      id: 1,
+      title: 'test event',
+      start: new Date('2019-08-06T10:00:00').getTime(),
+      end: new Date('2019-08-06T11:00:00').getTime(),
+    },
+  ];
 
   beforeEach(() => {
-    fetchService.fetch = jest.fn();
+    request = jest.fn();
     handleEventClick = jest.fn();
     openPopupForNewEvent = jest.fn();
-    setReadyToFetch = jest.fn();
-    setIsLoading = jest.fn();
-    events = [
-      {
-        id: 1,
-        title: 'test event',
-        start: new Date('2019-08-06T10:00:00').getTime(),
-        end: new Date('2019-08-06T11:00:00').getTime(),
-      },
-    ];
+    events = transformEventForCalendar(originalEvents);
     date = moment([2019, 7, 6]);
   });
 
@@ -42,8 +39,7 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
@@ -58,16 +54,14 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
     fireEvent.click(getByTestId('6-0'));
     expect(openPopupForNewEvent).toBeCalledTimes(0);
     expect(handleEventClick).toBeCalledTimes(1);
-    expect(handleEventClick).toBeCalledWith(expect.objectContaining(events[0]));
-    expect(setReadyToFetch).toBeCalledTimes(0);
+    expect(handleEventClick).toBeCalledWith(expect.objectContaining(originalEvents[0]));
   });
 
   it('should invoke openPopupForNewEvent on date click', () => {
@@ -77,8 +71,7 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
@@ -95,7 +88,6 @@ describe('WeekView', () => {
     expect(openPopupForNewEvent).toBeCalledTimes(1);
     expect(openPopupForNewEvent).toBeCalledWith(new Date(2019, 7, 6, 15).getTime());
     expect(handleEventClick).toBeCalledTimes(0);
-    expect(setReadyToFetch).toBeCalledTimes(0);
   });
 
   it('should drag and drop event to other date and invoke update request', () => {
@@ -113,8 +105,7 @@ describe('WeekView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
@@ -134,8 +125,8 @@ describe('WeekView', () => {
     fireEvent(getByTestId('Date-7'), event);
 
     fireEvent.dragEnd(getByTestId('6-0'));
-    expect(fetchService.fetch).toBeCalledTimes(1);
-    expect(fetchService.fetch).toBeCalledWith(
+    expect(request).toBeCalledTimes(1);
+    expect(request).toBeCalledWith(
       expect.objectContaining({
         method: 'PUT',
         body: changedEvent,
@@ -145,15 +136,13 @@ describe('WeekView', () => {
 
   describe('function makeDates', () => {
     it('should return an array which has proper dates number by provided moment object', () => {
-      const transformedEvents = transformEventForCalendar(events);
-
       const m = moment([2019, 8, 15]);
-      const week = makeDatesForWeek(m, transformedEvents);
+      const week = makeDatesForWeek(m, events);
       expect(week[0].date).toBe('15');
       expect(week[6].date).toBe('21');
 
       const m2 = moment([2019, 7, 15]);
-      const week2 = makeDatesForWeek(m2, transformedEvents);
+      const week2 = makeDatesForWeek(m2, events);
       expect(week2[0].date).toBe('11');
       expect(week2[1].date).toBe('12');
     });

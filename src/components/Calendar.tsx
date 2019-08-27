@@ -1,11 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router-dom';
 import moment, { Moment } from 'moment';
-import { Event } from '../types/Event';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
-import useEventService from '../hooks/useEventService';
+import useEvent from '../hooks/useEvent';
 import Controller from './Controller';
 import EventPopup from './EventPopup';
 import Portal from '../util/Portal';
@@ -28,23 +27,15 @@ const Container = styled.div`
   user-select: none;
 `;
 
-const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
-  const viewType = match.params.viewType || 'month';
+const Calendar: React.FC<RouteComponentProps<CalendarProps>> = (props) => {
+  const viewType = props.match.params.viewType || 'month';
 
-  // a date which user is looking
-  const initialDate: any = {};
-  if (match.params.date) {
-    // only for initilization of dates when it's the first open of this app
-    const { year, month, date } = match.params;
-    initialDate.y = Number(year);
-    initialDate.M = Number(month) - 1;
-    initialDate.d = Number(date);
-  }
-  const [date, setDate] = useState<Moment>(moment(initialDate));
+  const [date, setDate] = useState<Moment>(getInitialDate(props));
 
   // events
-  const { events, setReadyToFetch, isLoading, setIsLoading } = useEventService(date, viewType);
+  const { events, isLoading, request } = useEvent(date, viewType);
 
+  // popup
   const {
     isPopupOpen,
     popupMode,
@@ -65,8 +56,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
           events={events}
           handleEventClick={handleEventClick}
           openPopupForNewEvent={openPopupForNewEvent}
-          setIsLoading={setIsLoading}
-          setReadyToFetch={setReadyToFetch}
+          request={request}
         />
       ) : (
           <WeekView
@@ -74,8 +64,7 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
             events={events}
             handleEventClick={handleEventClick}
             openPopupForNewEvent={openPopupForNewEvent}
-            setIsLoading={setIsLoading}
-            setReadyToFetch={setReadyToFetch}
+            request={request}
           />
         )}
 
@@ -86,15 +75,29 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
             selectedEvent={selectedEvent}
             popupMode={popupMode}
             closePopup={closePopup}
-            setReadyToFetch={setReadyToFetch}
-            setIsLoading={setIsLoading}
             selectedTime={selectedTime}
+            request={request}
           />
         </Portal>
       )}
+
       {isLoading && <Loading />}
     </Container>
   );
 };
+
+function getInitialDate({ match }: RouteComponentProps<CalendarProps>) {
+  // a date which user is looking
+  const initialDate: any = {};
+  if (match.params.date) {
+    // only for initilization of dates when it's the first open of this app
+    const { year, month, date } = match.params;
+    initialDate.y = Number(year);
+    initialDate.M = Number(month) - 1;
+    initialDate.d = Number(date);
+  }
+
+  return moment(initialDate);
+}
 
 export default Calendar;

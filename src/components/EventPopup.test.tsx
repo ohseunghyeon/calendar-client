@@ -4,18 +4,18 @@ import EventPopup from './EventPopup';
 import moment from 'moment';
 import { Event } from '../types/Event';
 import { HOUR } from '../constants';
-import fetchService from '../services/fetch.service';
 
 describe('EventPopup', () => {
   afterEach(cleanup);
 
   let date: Date;
   let closePopup: jest.Mock;
-  const setReadyToFetch = jest.fn();
+  let request: jest.Mock;
 
   beforeEach(() => {
     date = new Date();
     closePopup = jest.fn();
+    request = jest.fn();
   });
 
   it('should render title, start time, end time with provided event', () => {
@@ -32,8 +32,8 @@ describe('EventPopup', () => {
         selectedEvent={selectedEvent}
         popupMode="update"
         closePopup={closePopup}
-        setReadyToFetch={setReadyToFetch}
         selectedTime={date}
+        request={request}
       />
     );
 
@@ -55,7 +55,13 @@ describe('EventPopup', () => {
 
   it('should render empty title, current start time, end time which is one hour later of start time on new mode', () => {
     const { getByTestId } = render(
-      <EventPopup viewType="week" popupMode="new" closePopup={closePopup} setReadyToFetch={setReadyToFetch} selectedTime={date} />
+      <EventPopup
+        viewType="week"
+        popupMode="new"
+        closePopup={closePopup}
+        selectedTime={date}
+        request={request}
+      />
     );
 
     expect(getByTestId('title').getAttribute('value')).toBe('');
@@ -76,7 +82,13 @@ describe('EventPopup', () => {
 
   it('should invoke closePopup function on Dim click', () => {
     const { getByTestId } = render(
-      <EventPopup viewType="month" popupMode="new" closePopup={closePopup} setReadyToFetch={setReadyToFetch} selectedTime={date} />
+      <EventPopup
+        viewType="month"
+        popupMode="new"
+        closePopup={closePopup}
+        selectedTime={date}
+        request={request}
+      />
     );
     fireEvent.click(getByTestId('dim'));
     expect(closePopup).toBeCalledTimes(1);
@@ -96,8 +108,8 @@ describe('EventPopup', () => {
         selectedEvent={selectedEvent}
         popupMode="update"
         closePopup={closePopup}
-        setReadyToFetch={setReadyToFetch}
         selectedTime={date}
+        request={request}
       />
     );
     fireEvent.click(getByTestId('cancel'));
@@ -105,8 +117,6 @@ describe('EventPopup', () => {
   });
 
   it('should invoke put fetcher with body on save click', () => {
-    fetchService.fetch = jest.fn();
-
     const selectedEvent: Event = {
       id: 1,
       title: '타이틀',
@@ -120,13 +130,13 @@ describe('EventPopup', () => {
         selectedEvent={selectedEvent}
         popupMode="update"
         closePopup={closePopup}
-        setReadyToFetch={setReadyToFetch}
         selectedTime={date}
+        request={request}
       />
     );
     fireEvent.click(getByTestId('save'));
-    expect(fetchService.fetch).toBeCalledTimes(1);
-    expect(fetchService.fetch).toBeCalledWith(
+    expect(request).toBeCalledTimes(1);
+    expect(request).toBeCalledWith(
       expect.objectContaining({
         method: 'PUT',
         body: selectedEvent,
@@ -135,8 +145,6 @@ describe('EventPopup', () => {
   });
 
   it('should invoke delete fetcher with id on remove click', () => {
-    fetchService.fetch = jest.fn();
-
     const selectedEvent: Event = {
       id: 1,
       title: '타이틀',
@@ -150,13 +158,13 @@ describe('EventPopup', () => {
         selectedEvent={selectedEvent}
         popupMode="update"
         closePopup={closePopup}
-        setReadyToFetch={setReadyToFetch}
         selectedTime={date}
+        request={request}
       />
     );
     fireEvent.click(getByTestId('remove'));
-    expect(fetchService.fetch).toBeCalledTimes(1);
-    expect(fetchService.fetch).toBeCalledWith(
+    expect(request).toBeCalledTimes(1);
+    expect(request).toBeCalledWith(
       expect.objectContaining({
         method: 'DELETE',
         body: { id: 1 },

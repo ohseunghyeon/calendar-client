@@ -1,8 +1,7 @@
-import React, { Dispatch, SetStateAction, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FiberManualRecord } from '@material-ui/icons';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
-import transformEventForCalendar from '../util/transformEventForCalendar';
 import {
   CalendarWrapper,
   DayText,
@@ -21,15 +20,13 @@ import {
   OneEvent,
 } from './MonthView.styled';
 import { DAYS } from '../constants';
-import fetchService from '../services/fetch.service';
 
 interface Props {
   date: Moment;
-  events: Event[];
+  events: {};
   handleEventClick: (e: Event) => void;
   openPopupForNewEvent: (unixtime: number) => void;
-  setReadyToFetch: Dispatch<SetStateAction<boolean>>;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  request: Function;
 }
 
 /**
@@ -103,9 +100,8 @@ export const makeDatesForMonth = (date: Moment, eventsObj: any) => {
   return { weeks, heights };
 };
 
-const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch, setIsLoading }) => {
-  const eventsObj = transformEventForCalendar(events);
-  const { weeks, heights } = makeDatesForMonth(date, eventsObj);
+const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, request }) => {
+  const { weeks, heights } = makeDatesForMonth(date, events);
   const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
 
   const handleDateClick = useCallback((e: React.SyntheticEvent, unixtime: number) => {
@@ -140,16 +136,14 @@ const MonthView: React.FC<Props> = ({ date, events, handleEventClick, openPopupF
     start.setFullYear(date.getFullYear());
     start.setMonth(date.getMonth());
     start.setDate(date.getDate());
-    setIsLoading(true);
-    fetchService.fetch({
+    request({
       method: 'PUT',
       body: {
         id: event.id,
         title: event.title,
         start: start.getTime(),
         end: start.getTime() + differenceStartEnd,
-      },
-      callback: () => setReadyToFetch(true),
+      }
     });
   }
 

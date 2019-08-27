@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
 import {
@@ -43,17 +43,14 @@ import {
   EventButtonContentTime,
   EventButtonContentEnd,
 } from './WeekView.styled';
-import transformEventForCalendar from '../util/transformEventForCalendar';
 import { HOUR, DAYS, TIMES, ONE_HOUR_HEIGHT_PIXELS } from '../constants';
-import fetchService from '../services/fetch.service';
 
 interface Props {
   date: Moment;
-  events: Event[];
+  events: {};
   handleEventClick: (e: Event) => void;
   openPopupForNewEvent: (unixtime: number) => void;
-  setReadyToFetch: Dispatch<SetStateAction<boolean>>;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  request: Function;
 }
 
 export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
@@ -89,9 +86,8 @@ export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
 
 let timeout: number | undefined;
 
-const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, setReadyToFetch, setIsLoading }) => {
-  const eventsObj = transformEventForCalendar(events);
-  const week = makeDatesForWeek(date, eventsObj);
+const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, request }) => {
+  const week = makeDatesForWeek(date, events);
   const [isDragging, setIsDragging] = useState(false);
   const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
   const [draggingDayIndex, setDraggingDayIndex] = useState(-1);
@@ -137,8 +133,7 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
     setDraggingEvent(undefined);
     setDraggingTop(0);
 
-    setIsLoading(true);
-    fetchService.fetch({
+    request({
       method: 'PUT',
       body: {
         id: event.id,
@@ -146,7 +141,6 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
         start: startDate.unix() * 1000,
         end: startDate.unix() * 1000 + differenceStartEnd,
       },
-      callback: () => setReadyToFetch(true),
     });
   };
 

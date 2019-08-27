@@ -1,6 +1,5 @@
-import React, { useState, Dispatch, SetStateAction, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Event } from '../types/Event';
-import fetchService from '../services/fetch.service';
 import { Dim, EventPopupWrapper, Input, DatePickerWrapper, DatePickerStyled, ButtonWrapper, Button } from './EventPopup.styled';
 
 interface EventPopupProps {
@@ -8,9 +7,8 @@ interface EventPopupProps {
   popupMode: string;
   selectedEvent?: Event;
   closePopup: () => void;
-  setReadyToFetch: Dispatch<SetStateAction<boolean>>;
   selectedTime: Date;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  request: Function;
 }
 
 const EventPopup: React.FC<EventPopupProps> = ({
@@ -18,9 +16,8 @@ const EventPopup: React.FC<EventPopupProps> = ({
   popupMode,
   selectedEvent,
   closePopup,
-  setReadyToFetch,
   selectedTime,
-  setIsLoading,
+  request
 }) => {
   const handleDimClick = useCallback((e: React.SyntheticEvent) => e.currentTarget === e.target && closePopup(), [closePopup]);
 
@@ -45,26 +42,18 @@ const EventPopup: React.FC<EventPopupProps> = ({
   const [endDate, setEndDate] = useState(initialEnd);
   const handleEndPickerChange = useCallback((date: Date) => setEndDate(date), [setEndDate]);
 
-  // 삭제, 저장 핸들러
-  const callback = useCallback(() => {
-    setReadyToFetch(true);
-    closePopup();
-  }, [closePopup, setReadyToFetch]);
-
   const handleRemove = () => {
     if (selectedEvent) {
-      setIsLoading(true);
-      fetchService.fetch({
+      request({
         method: 'DELETE',
         body: { id: selectedEvent.id },
-        callback,
+        callback: closePopup
       });
     }
   };
 
   const handleSave = () => {
-    setIsLoading(true);
-    fetchService.fetch({
+    request({
       method: popupMode === 'update' ? 'PUT' : 'POST',
       body: {
         id: selectedEvent && selectedEvent.id,
@@ -72,7 +61,7 @@ const EventPopup: React.FC<EventPopupProps> = ({
         start: startDate.getTime(),
         end: endDate.getTime(),
       },
-      callback,
+      callback: closePopup
     });
   };
 

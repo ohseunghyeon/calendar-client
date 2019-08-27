@@ -7,8 +7,8 @@ const PIXELS_BOTTOM_PADDING = 4;
 /**
  * Transform Events array to Events Object like
  * {
- *    month: {
- *        date: []
+ *    [:month]: {
+ *        [:date]: []
  *    }
  * }
  */

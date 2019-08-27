@@ -1,6 +1,6 @@
 import React from 'react';
 import { cleanup, render } from '@testing-library/react';
-import useEventService from './useEventService';
+import useEvent from './useEvent';
 import moment, { Moment } from 'moment';
 import fetchService from '../services/fetch.service';
 
@@ -10,7 +10,7 @@ interface TestProps {
 }
 
 const Test: React.FC<TestProps> = ({ date, viewType }) => {
-  useEventService(date, viewType);
+  useEvent(date, viewType);
 
   return <div></div>;
 };
@@ -19,10 +19,10 @@ describe('useEventService', () => {
   afterEach(cleanup);
 
   it('should invoke get fetch once, properly on month type', () => {
-    fetchService.fetch = jest.fn();
+    fetchService.fetchWrapper = jest.fn();
     const {} = render(<Test date={moment([2019, 7, 11])} viewType="month" />);
-    expect(fetchService.fetch).toBeCalledTimes(1);
-    expect(fetchService.fetch).toBeCalledWith(
+    expect(fetchService.fetchWrapper).toBeCalledTimes(1);
+    expect(fetchService.fetchWrapper).toBeCalledWith(
       expect.objectContaining({
         method: 'GET',
         qs: {
@@ -34,10 +34,10 @@ describe('useEventService', () => {
   });
 
   it('should invoke get fetch once', () => {
-    fetchService.fetch = jest.fn();
+    fetchService.fetchWrapper = jest.fn();
     const {} = render(<Test date={moment([2019, 7, 11])} viewType="week" />);
-    expect(fetchService.fetch).toBeCalledTimes(1);
-    expect(fetchService.fetch).toBeCalledWith(
+    expect(fetchService.fetchWrapper).toBeCalledTimes(1);
+    expect(fetchService.fetchWrapper).toBeCalledWith(
       expect.objectContaining({
         method: 'GET',
         qs: {
@@ -49,11 +49,11 @@ describe('useEventService', () => {
   });
 
   it('should invoke get fetch when date is changed', () => {
-    fetchService.fetch = jest.fn();
+    fetchService.fetchWrapper = jest.fn();
     const { rerender } = render(<Test date={moment([2019, 7, 11])} viewType="week" />);
 
     rerender(<Test date={moment([2019, 7, 18])} viewType="week" />);
 
-    expect(fetchService.fetch).toBeCalledTimes(2);
+    expect(fetchService.fetchWrapper).toBeCalledTimes(2);
   });
 });

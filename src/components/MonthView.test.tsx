@@ -4,7 +4,6 @@ import MonthView from './MonthView';
 import moment, { Moment } from 'moment';
 import { makeDatesForMonth } from './MonthView';
 import transformEventForCalendar from '../util/transformEventForCalendar';
-import fetchService from '../services/fetch.service';
 import { Event } from '../types/Event';
 
 describe('MonthView', () => {
@@ -12,24 +11,23 @@ describe('MonthView', () => {
 
   let handleEventClick: jest.Mock;
   let openPopupForNewEvent: jest.Mock;
-  let setReadyToFetch: jest.Mock;
-  let setIsLoading: jest.Mock;
-  let events: Event[];
+  let events: {};
+  let request: jest.Mock;
   let date: Moment;
+  const originalEvents: Event[] = [
+    {
+      id: 1,
+      title: 'test event',
+      start: new Date('2019-08-06T01:00:00').getTime(),
+      end: new Date('2019-08-06T02:00:00').getTime(),
+    },
+  ];
 
   beforeEach(() => {
     handleEventClick = jest.fn();
     openPopupForNewEvent = jest.fn();
-    setReadyToFetch = jest.fn();
-    setIsLoading = jest.fn();
-    events = [
-      {
-        id: 1,
-        title: 'test event',
-        start: new Date('2019-08-06T01:00:00').getTime(),
-        end: new Date('2019-08-06T02:00:00').getTime(),
-      },
-    ];
+    request = jest.fn();
+    events = transformEventForCalendar(originalEvents);
     date = moment([2019, 7, 6]);
   });
 
@@ -40,8 +38,7 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
@@ -55,16 +52,14 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
     fireEvent.click(getByTestId('7-6-0'));
     expect(openPopupForNewEvent).toBeCalledTimes(0);
     expect(handleEventClick).toBeCalledTimes(1);
-    expect(handleEventClick).toBeCalledWith(expect.objectContaining(events[0]));
-    expect(setReadyToFetch).toBeCalledTimes(0);
+    expect(handleEventClick).toBeCalledWith(expect.objectContaining(originalEvents[0]));
   });
 
   it('should invoke openPopupForNewEvent on date click', () => {
@@ -74,8 +69,7 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
@@ -83,12 +77,9 @@ describe('MonthView', () => {
     expect(openPopupForNewEvent).toBeCalledTimes(1);
     expect(openPopupForNewEvent).toBeCalledWith(new Date(2019, 7, 6).getTime());
     expect(handleEventClick).toBeCalledTimes(0);
-    expect(setReadyToFetch).toBeCalledTimes(0);
   });
 
   it('should drag and drop event to other date and invoke update request', () => {
-    fetchService.fetch = jest.fn();
-
     // it has start, end which is 1 date tile added
     const changedEvent = {
       id: 1,
@@ -103,8 +94,7 @@ describe('MonthView', () => {
         events={events}
         handleEventClick={handleEventClick}
         openPopupForNewEvent={openPopupForNewEvent}
-        setIsLoading={setIsLoading}
-        setReadyToFetch={setReadyToFetch}
+        request={request}
       />
     );
 
@@ -114,8 +104,8 @@ describe('MonthView', () => {
       },
     });
     fireEvent.drop(getByTestId('TW-7-7'));
-    expect(fetchService.fetch).toBeCalledTimes(1);
-    expect(fetchService.fetch).toBeCalledWith(
+    expect(request).toBeCalledTimes(1);
+    expect(request).toBeCalledWith(
       expect.objectContaining({
         method: 'PUT',
         body: changedEvent,
@@ -125,15 +115,13 @@ describe('MonthView', () => {
 
   describe('function makeDates', () => {
     it('should return an array which has proper dates number by provided moment object', () => {
-      const transformedEvents = transformEventForCalendar(events);
-
       const m = moment([2019, 8, 15]);
-      const { weeks } = makeDatesForMonth(m, transformedEvents);
+      const { weeks } = makeDatesForMonth(m, events);
       expect(weeks[0][0].dateTitle).toBe('9월 1일');
       expect(weeks[4][6].dateTitle).toBe('5');
 
       const m2 = moment([2019, 7, 15]);
-      const { weeks: weeks2, heights } = makeDatesForMonth(m2, transformedEvents);
+      const { weeks: weeks2, heights } = makeDatesForMonth(m2, events);
       expect(weeks2[0][0].dateTitle).toBe('28');
       expect(weeks2[0][0].isThisMonth).toBe(false);
       expect(heights[0]).toBe(0);

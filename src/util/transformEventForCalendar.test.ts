@@ -1,4 +1,4 @@
-import { cleanup, render, fireEvent } from '@testing-library/react';
+import { cleanup } from '@testing-library/react';
 import transformEventForCalendar from './transformEventForCalendar';
 
 describe('function transformEventForCalendar', () => {
