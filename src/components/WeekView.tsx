@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import moment, { Moment } from 'moment';
 import { Event } from '../types/Event';
 import {
@@ -84,7 +84,6 @@ export const makeDatesForWeek = (date: Moment, eventsObj: any) => {
   return week;
 };
 
-let timeout: number | undefined;
 
 const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupForNewEvent, request }) => {
   const week = makeDatesForWeek(date, events);
@@ -92,7 +91,8 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
   const [draggingEvent, setDraggingEvent] = useState<any>(); // event object
   const [draggingDayIndex, setDraggingDayIndex] = useState(-1);
   const [draggingTop, setDraggingTop] = useState(0);
-
+  const timeout = useRef<ReturnType<typeof setTimeout>>();
+  
   const handleDateClick = useCallback((e: React.MouseEvent, unixtime: number) => {
     if (e.currentTarget === e.target) {
       openPopupForNewEvent(unixtime + HOUR * Math.floor(e.nativeEvent.offsetY / ONE_HOUR_HEIGHT_PIXELS));
@@ -107,11 +107,11 @@ const WeekView: React.FC<Props> = ({ date, events, handleEventClick, openPopupFo
 
   const handleDragOver = useCallback((e: React.DragEvent, dayIndex: number) => {
     e.preventDefault();
-    if (timeout === undefined && e.target === e.currentTarget) {
+    if (!timeout.current && e.target === e.currentTarget) {
       setDraggingDayIndex(dayIndex);
       setDraggingTop(Math.floor(e.nativeEvent.offsetY / ONE_HOUR_HEIGHT_PIXELS) * ONE_HOUR_HEIGHT_PIXELS);
 
-      timeout = setTimeout(() => (timeout = undefined), 100);
+      timeout.current = setTimeout(() => (timeout.current = undefined), 100);
     }
   }, []);
 
