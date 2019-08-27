@@ -10,6 +10,7 @@ import Controller from './Controller';
 import EventPopup from './EventPopup';
 import Portal from '../util/Portal';
 import Loading from '../util/Loading';
+import useEventPopup from '../hooks/useEventPopup';
 
 interface CalendarProps {
   viewType: 'month' | 'week';
@@ -44,27 +45,15 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
   // events
   const { events, setReadyToFetch, isLoading, setIsLoading } = useEventService(date, viewType);
 
-  // popups
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [popupMode, setPopupMode] = useState<'new' | 'update'>('new');
-  const [selectedTime, setSelectedTime] = useState<Date>(new Date());
-  const [selectedEvent, setSelectedEvent] = useState<Event>();
-  const closePopup = useCallback(() => {
-    setSelectedEvent(undefined);
-    setIsPopupOpen(false);
-  }, []);
-
-  const handleEventClick = (event: Event) => {
-    setSelectedEvent(event);
-    setPopupMode('update');
-    setIsPopupOpen(true);
-  };
-
-  const openPopupForNewEvent = (unixtime: number) => {
-    setSelectedTime(new Date(unixtime));
-    setPopupMode('new');
-    setIsPopupOpen(true);
-  };
+  const {
+    isPopupOpen,
+    popupMode,
+    selectedTime,
+    selectedEvent,
+    closePopup,
+    handleEventClick,
+    openPopupForNewEvent
+  } = useEventPopup();
 
   return (
     <Container>
@@ -97,8 +86,8 @@ const Calendar: React.FC<RouteComponentProps<CalendarProps>> = ({ match }) => {
             selectedEvent={selectedEvent}
             popupMode={popupMode}
             closePopup={closePopup}
-            setIsLoading={setIsLoading}
             setReadyToFetch={setReadyToFetch}
+            setIsLoading={setIsLoading}
             selectedTime={selectedTime}
           />
         </Portal>

@@ -3,16 +3,16 @@ import styled from 'styled-components';
 import Portal from './Portal';
 
 const Dim = styled.div`
-position: fixed;
-left: 0;
-top: 0;
-height: 100%;
-width: 100%;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-z-index: 1;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
 `;
 
 const LoadingCircle = styled.div`

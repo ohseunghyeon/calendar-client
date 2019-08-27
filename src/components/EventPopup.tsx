@@ -13,7 +13,15 @@ interface EventPopupProps {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-const EventPopup: React.FC<EventPopupProps> = ({ viewType, popupMode, selectedEvent, closePopup, setReadyToFetch, selectedTime, setIsLoading }) => {
+const EventPopup: React.FC<EventPopupProps> = ({
+  viewType,
+  popupMode,
+  selectedEvent,
+  closePopup,
+  setReadyToFetch,
+  selectedTime,
+  setIsLoading,
+}) => {
   const handleDimClick = useCallback((e: React.SyntheticEvent) => e.currentTarget === e.target && closePopup(), [closePopup]);
 
   const [title, setTitle] = useState(selectedEvent ? selectedEvent.title : '');
